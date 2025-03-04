@@ -1,12 +1,11 @@
-import IOrderService from '../domain/use-cases/orders/IOrderService';
-import { SingletonContainer } from 'singleton-injection';
-import OrdersViewModel from '../views/web/orders/OrdersViewModel';
-import IOrdersViewModel from '../views/web/orders/IOrdersViewModel';
-import OrderService from '../data/api/orders/OrderService';
+import { SingletonContainer } from "singleton-injection";
+import { ITodoService } from "@/domain/use-cases/todos";
+import { ITodosViewModel, TodoViewModel } from "@/views/web/todos";
+import { TodoService } from "@/data/api/todos";
 
 const singletonMap = {
-  IOrderService: () => new OrderService() as IOrderService,
-  IOrdersViewModel: () => new OrdersViewModel() as IOrdersViewModel,
+  ITodoService: () => new TodoService() as ITodoService,
+  ITodosViewModel: () => new TodoViewModel() as ITodosViewModel,
 };
 
 export const container = new SingletonContainer(singletonMap);

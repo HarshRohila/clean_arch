@@ -1,10 +1,10 @@
-import './App.css';
-import { Orders } from './views/web/react-components/Orders';
+import "./App.css";
+import { Todos } from "./views/web/react-components/Todos";
 
 function App() {
   return (
     <>
-      <Orders />
+      <Todos />
     </>
   );
 }

@@ -1,4 +1,3 @@
-import { SingletonContainer } from "singleton-injection";
 import { ITodosPresenter, TodosPresenter } from "@/views/web/todos";
 import { TodoService } from "@/persistence/api/todos";
 import { ITodoService } from "@/views/web/ports";
@@ -10,10 +9,5 @@ const dependencyInjectionMap = {
 
 type DependencyIds = keyof typeof dependencyInjectionMap;
 
-function newInstance(key: DependencyIds) {
-  return dependencyInjectionMap[key]();
-}
-
-export const container = new SingletonContainer(dependencyInjectionMap);
-export { newInstance, dependencyInjectionMap };
+export { dependencyInjectionMap };
 export type { DependencyIds };

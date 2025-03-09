@@ -1,5 +1,10 @@
-import { DependencyIds, newInstance } from "@/config/main";
+import { DependencyIds, dependencyInjectionMap } from "@/config/main";
 import { useRef } from "react";
+import { SingletonContainer } from "singleton-injection";
+
+function newInstance(key: DependencyIds) {
+  return dependencyInjectionMap[key]();
+}
 
 function useComponentScoped<T>(key: DependencyIds) {
   const instanceRef = useRef<T>(null);
@@ -11,4 +16,6 @@ function useComponentScoped<T>(key: DependencyIds) {
   return instanceRef.current;
 }
 
-export { useComponentScoped };
+const container = new SingletonContainer(dependencyInjectionMap);
+
+export { useComponentScoped, container };

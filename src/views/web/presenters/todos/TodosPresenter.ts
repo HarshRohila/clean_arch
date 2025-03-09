@@ -1,7 +1,7 @@
 import { createState } from "@rx-state-utils/js";
 import { TodosState, ITodosPresenter, TodosViewModel } from "./ITodosPresenter";
 import { take } from "@/libs/rx";
-import { Models } from "../ports";
+import { Models } from "../../ports";
 import { container } from "@/utils/dep-injection";
 
 class TodosPresenter implements ITodosPresenter {

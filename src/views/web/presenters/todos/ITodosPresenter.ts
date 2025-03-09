@@ -1,5 +1,5 @@
 import { ReadOnlyState } from "@rx-state-utils/js";
-import { Models } from "../ports";
+import { Models } from "../../ports";
 
 interface TodosState extends Record<string, unknown> {
   todos: Models.Todo[];

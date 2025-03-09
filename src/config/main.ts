@@ -1,4 +1,4 @@
-import { ITodosPresenter, TodosPresenter } from "@/views/web/todos";
+import { ITodosPresenter, TodosPresenter } from "@/views/web/presenters/todos";
 import { TodoService } from "@/persistence/api/todos";
 import { ITodoService } from "@/views/web/ports";
 

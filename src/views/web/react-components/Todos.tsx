@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useStateStream } from "@/utils/state-mgt";
 import { Models } from "../ports";
-import { ITodosPresenter } from "../todos";
+import { ITodosPresenter } from "../presenters/todos";
 import { useComponentScoped } from "@/utils/dep-injection";
 
 function Todos() {

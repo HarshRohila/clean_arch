@@ -1,22 +1,29 @@
-import { createState, ReadOnlyState } from "@rx-state-utils/js";
-import { TodosState, ITodosViewModel } from "./ITodosViewModel";
+import { createState } from "@rx-state-utils/js";
+import { TodosState, ITodosPresenter, TodosViewModel } from "./ITodosPresenter";
 import { container } from "@/config/main";
 import { take } from "@/libs/rx";
-import { TodoModel } from "@/domain/entities";
+import { Models } from "../ports";
 
-class TodoViewModel implements ITodosViewModel {
+class TodosPresenter implements ITodosPresenter {
   private _todosState = createState<TodosState>({
     todos: [],
     currentEditTodoId: undefined,
     currentEditingTodo: undefined,
   });
 
-  todosState: ReadOnlyState<TodosState>;
+  viewModel: TodosViewModel;
+
   constructor() {
-    this.todosState = this._todosState.readOnly();
+    this.viewModel = {
+      state: this._todosState.readOnly(),
+      labels: {
+        edit: "Edit",
+        save: "Save",
+      },
+    };
   }
 
-  handleEdit(updatedTodo: TodoModel) {
+  handleEdit(updatedTodo: Models.Todo) {
     this._todosState.update({
       currentEditTodoId: updatedTodo.id,
       currentEditingTodo: { ...updatedTodo },
@@ -59,4 +66,4 @@ class TodoViewModel implements ITodosViewModel {
   }
 }
 
-export { TodoViewModel };
+export { TodosPresenter };

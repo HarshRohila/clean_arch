@@ -1,10 +1,9 @@
 import { of } from "@/libs/rx";
-import { TodoModel } from "@/domain/entities";
-import { ITodoService } from "@/domain/use-cases/todos";
+import { ITodoService, Models } from "@/views/web/ports";
 
 class TodoService implements ITodoService {
   getTodos() {
-    const someTodos: TodoModel[] = [
+    const someTodos: Models.Todo[] = [
       {
         id: "1",
         text: "homework",

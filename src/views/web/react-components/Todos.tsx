@@ -13,15 +13,33 @@ function Todos() {
 
   const viewModel = presenter.viewModel;
   const state = useStateStream(viewModel.state);
+  const newTodoText = useStateStream(viewModel.newTodoText);
 
   return (
-    <ul>
-      {state.todos.map((todo) => (
-        <li key={todo.id}>
-          <SingleTodo todo={todo} presenter={presenter} />
-        </li>
-      ))}
-    </ul>
+    <>
+      <h1>Todos</h1>
+      <form
+        onSubmit={(ev) => {
+          ev.preventDefault();
+          presenter.handleAddTodo();
+        }}
+      >
+        <input
+          type="text"
+          value={newTodoText.text}
+          placeholder={viewModel.labels.newTodoPlaceholder}
+          onChange={(ev) => presenter.handleNewTodoTextChange(ev.target.value)}
+        />
+        <button>{viewModel.labels.add}</button>
+      </form>
+      <ul>
+        {state.todos.map((todo) => (
+          <li className="todo-item" key={todo.id}>
+            <SingleTodo todo={todo} presenter={presenter} />
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }
 
@@ -43,9 +61,12 @@ function SingleTodo({
       )}
       {!isEditMode && (
         <>
-          {todo.text}
+          <span className="todo-text">{todo.text}</span>
           <button onClick={() => presenter.handleEdit(todo)}>
             {viewModel.labels.edit}
+          </button>
+          <button onClick={() => presenter.handleDelete(todo.id)}>
+            {viewModel.labels.delete}
           </button>
         </>
       )}

@@ -3,6 +3,7 @@ import { TodosState, ITodosPresenter, TodosViewModel } from "./ITodosPresenter";
 import { take } from "@/libs/rx";
 import { Models } from "../../ports";
 import { container } from "@/utils/dep-injection";
+import { switchMap } from "rxjs";
 
 class TodosPresenter implements ITodosPresenter {
   private _todosState = createState<TodosState>({
@@ -11,17 +12,42 @@ class TodosPresenter implements ITodosPresenter {
     currentEditingTodo: undefined,
   });
 
+  private _newTodoText = createState<{ text: string }>({ text: "" });
+
   viewModel: TodosViewModel;
 
   constructor() {
     this.viewModel = {
       state: this._todosState.readOnly(),
+      newTodoText: this._newTodoText.readOnly(),
       labels: {
         edit: "Edit",
         save: "Save",
+        delete: "Delete",
+        add: "Add Todo",
+        newTodoPlaceholder: "New Todo",
       },
     };
   }
+  handleNewTodoTextChange(newText: string): void {
+    this._newTodoText.update({ text: newText });
+  }
+  handleAddTodo(): void {
+    this.todoService
+      .addTodo({
+        text: this._newTodoText.get().text,
+      })
+      .pipe(
+        switchMap(() => this.todoService.getTodos()),
+        take(1)
+      )
+      .subscribe((newTodos) => {
+        this._newTodoText.update({ text: "" });
+        this._todosState.update({ todos: newTodos });
+      });
+  }
+
+  private todoService = container.resolve("ITodoService");
 
   handleEdit(updatedTodo: Models.Todo) {
     this._todosState.update({
@@ -35,16 +61,21 @@ class TodosPresenter implements ITodosPresenter {
   }
 
   handleSubmit() {
-    this._todosState.update((currState) => ({
-      todos: currState.todos.map((o) => {
-        if (o.id === currState.currentEditingTodo!.id) {
-          return currState.currentEditingTodo!;
-        }
-        return o;
-      }),
-      currentEditTodoId: undefined,
-      currentEditingTodo: undefined,
-    }));
+    const state = this._todosState.get();
+
+    this.todoService
+      .updateTodo(state.currentEditTodoId!, state.currentEditingTodo!)
+      .pipe(
+        switchMap(() => this.todoService.getTodos()),
+        take(1)
+      )
+      .subscribe((newTodos) => {
+        this._todosState.update(() => ({
+          todos: newTodos,
+          currentEditTodoId: undefined,
+          currentEditingTodo: undefined,
+        }));
+      });
   }
   handleExitEdit() {
     this._todosState.update({ currentEditTodoId: undefined });
@@ -53,6 +84,18 @@ class TodosPresenter implements ITodosPresenter {
     this._todosState.update((currState) => ({
       currentEditingTodo: { ...currState.currentEditingTodo!, text: newDesc },
     }));
+  }
+
+  handleDelete(todoId: string) {
+    this.todoService
+      .deleteTodo(todoId)
+      .pipe(
+        switchMap(() => this.todoService.getTodos()),
+        take(1)
+      )
+      .subscribe((newTodos) => {
+        this._todosState.update({ todos: newTodos });
+      });
   }
 
   loadTodos() {

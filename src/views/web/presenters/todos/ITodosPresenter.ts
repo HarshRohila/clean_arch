@@ -9,6 +9,7 @@ interface TodosState extends Record<string, unknown> {
 
 interface TodosViewModel {
   state: ReadOnlyState<TodosState>;
+  newTodoText: ReadOnlyState<{ text: string }>;
   labels: Record<string, string>;
 }
 
@@ -19,6 +20,9 @@ interface ITodosPresenter {
   handleExitEdit(): void;
   handleTodoTextChange(newText: string): void;
   isTodoInEditMode(todoId: string): boolean;
+  handleDelete(todoId: string): void;
+  handleNewTodoTextChange(newText: string): void;
+  handleAddTodo(): void;
   viewModel: TodosViewModel;
 }
 

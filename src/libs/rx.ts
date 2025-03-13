@@ -1,1 +1,1 @@
-export { Observable, of, take } from "rxjs";
+export { Observable, of, take, switchMap } from "rxjs";

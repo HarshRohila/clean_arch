@@ -30,7 +30,7 @@ function Todos() {
           placeholder={viewModel.labels.newTodoPlaceholder}
           onChange={(ev) => presenter.handleNewTodoTextChange(ev.target.value)}
         />
-        <button>{viewModel.labels.add}</button>
+        <button>{presenter.getAddButtonLabel()}</button>
       </form>
       <ul>
         {state.todos.map((todo) => (
@@ -66,7 +66,7 @@ function SingleTodo({
             {viewModel.labels.edit}
           </button>
           <button onClick={() => presenter.handleDelete(todo.id)}>
-            {viewModel.labels.delete}
+            {presenter.getDeleteButtonLabel(todo.id)}
           </button>
         </>
       )}
@@ -79,7 +79,6 @@ function TodoEditForm(props: {
   presenter: ITodosPresenter;
 }) {
   const presenter = props.presenter;
-  const { viewModel } = presenter;
 
   return (
     <form
@@ -96,7 +95,7 @@ function TodoEditForm(props: {
       <button type="button" onClick={() => presenter.handleExitEdit()}>
         X
       </button>
-      <button type="submit">{viewModel.labels.save}</button>
+      <button type="submit">{presenter.getSaveButtonLabel()}</button>
     </form>
   );
 }

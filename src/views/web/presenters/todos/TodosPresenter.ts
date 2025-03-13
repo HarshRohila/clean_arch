@@ -10,6 +10,9 @@ class TodosPresenter implements ITodosPresenter {
     todos: [],
     currentEditTodoId: undefined,
     currentEditingTodo: undefined,
+    addingTodo: false,
+    deletingTodoId: undefined,
+    savingTodoId: undefined,
   });
 
   private _newTodoText = createState<{ text: string }>({ text: "" });
@@ -26,13 +29,26 @@ class TodosPresenter implements ITodosPresenter {
         delete: "Delete",
         add: "Add Todo",
         newTodoPlaceholder: "New Todo",
+        loading: "Loading...",
       },
     };
+  }
+  getSaveButtonLabel(): string {
+    return this._todosState.get().savingTodoId
+      ? "Saving..."
+      : this.viewModel.labels.save;
+  }
+  getDeleteButtonLabel(todoId: string) {
+    return this._todosState.get().deletingTodoId === todoId
+      ? "Deleting..."
+      : "Delete";
   }
   handleNewTodoTextChange(newText: string): void {
     this._newTodoText.update({ text: newText });
   }
   handleAddTodo(): void {
+    this._todosState.update({ addingTodo: true });
+
     this.todoService
       .addTodo({
         text: this._newTodoText.get().text,
@@ -43,7 +59,7 @@ class TodosPresenter implements ITodosPresenter {
       )
       .subscribe((newTodos) => {
         this._newTodoText.update({ text: "" });
-        this._todosState.update({ todos: newTodos });
+        this._todosState.update({ todos: newTodos, addingTodo: false });
       });
   }
 
@@ -61,6 +77,9 @@ class TodosPresenter implements ITodosPresenter {
   }
 
   handleSubmit() {
+    this._todosState.update({
+      savingTodoId: this._todosState.get().currentEditTodoId,
+    });
     const state = this._todosState.get();
 
     this.todoService
@@ -74,6 +93,7 @@ class TodosPresenter implements ITodosPresenter {
           todos: newTodos,
           currentEditTodoId: undefined,
           currentEditingTodo: undefined,
+          savingTodoId: undefined,
         }));
       });
   }
@@ -85,8 +105,11 @@ class TodosPresenter implements ITodosPresenter {
       currentEditingTodo: { ...currState.currentEditingTodo!, text: newDesc },
     }));
   }
-
+  getAddButtonLabel() {
+    return this._todosState.get().addingTodo ? "Adding..." : "Add Todo";
+  }
   handleDelete(todoId: string) {
+    this._todosState.update({ deletingTodoId: todoId });
     this.todoService
       .deleteTodo(todoId)
       .pipe(
@@ -94,7 +117,7 @@ class TodosPresenter implements ITodosPresenter {
         take(1)
       )
       .subscribe((newTodos) => {
-        this._todosState.update({ todos: newTodos });
+        this._todosState.update({ todos: newTodos, deletingTodo: false });
       });
   }
 

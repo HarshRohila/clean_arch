@@ -5,6 +5,9 @@ interface TodosState extends Record<string, unknown> {
   todos: Models.Todo[];
   currentEditTodoId: string | undefined;
   currentEditingTodo: Models.Todo | undefined;
+  addingTodo: boolean;
+  deletingTodoId: string | undefined;
+  savingTodoId: string | undefined;
 }
 
 interface TodosViewModel {
@@ -23,6 +26,9 @@ interface ITodosPresenter {
   handleDelete(todoId: string): void;
   handleNewTodoTextChange(newText: string): void;
   handleAddTodo(): void;
+  getDeleteButtonLabel(todoId: string): string;
+  getAddButtonLabel(): string;
+  getSaveButtonLabel(): string;
   viewModel: TodosViewModel;
 }
 

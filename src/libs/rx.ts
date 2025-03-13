@@ -6,4 +6,5 @@ export {
   lastValueFrom,
   from,
   map,
+  tap,
 } from "rxjs";

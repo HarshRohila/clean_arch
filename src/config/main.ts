@@ -1,6 +1,6 @@
 import { ITodosPresenter, TodosPresenter } from "@/views/web/presenters/todos";
 import { ITodoService } from "@/views/web/ports";
-import { TodoService } from "@/persistence/mock-server/todos";
+import { TodoService } from "@/persistence/api/todos";
 
 const dependencyInjectionMap = {
   ITodoService: () => new TodoService() as ITodoService,

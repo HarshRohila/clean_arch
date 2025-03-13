@@ -1,39 +1,41 @@
-import { Observable, of } from "@/libs/rx";
+import { from, map, Observable } from "@/libs/rx";
 import { ITodoService, Models } from "@/views/web/ports";
+import { startServer } from "../utils/server";
 
 class TodoService implements ITodoService {
-  addTodo(todo: Omit<Models.Todo, "id">): Observable<Models.Todo> {
-    const newTodo = { ...todo, id: String(this.todos.length + 1) };
-    this.todos.push(newTodo);
-    return of(newTodo);
+  constructor() {
+    startServer();
   }
-  deleteTodo(todoId: string): Observable<void> {
-    this.todos = this.todos.filter((t) => t.id !== todoId);
-    return of(undefined);
+  getTodos() {
+    const todosPromise = fetch("/api/todos")
+      .then((res) => res.json())
+      .then((data) => data.todos);
+
+    return from(todosPromise);
   }
   updateTodo(todoId: string, todo: Partial<Models.Todo>): Observable<void> {
-    this.todos = this.todos.map((t) => {
-      if (t.id === todoId) {
-        return { ...t, ...todo };
-      }
-      return t;
+    const updatePromise = fetch(`/api/todos/${todoId}`, {
+      method: "PATCH",
+      body: JSON.stringify(todo),
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
-    return of(undefined);
+    return from(updatePromise).pipe(map(() => undefined));
   }
-
-  private todos: Models.Todo[] = [
-    {
-      id: "1",
-      text: "homework",
-    },
-    {
-      id: "2",
-      text: "pay bills",
-    },
-  ];
-
-  getTodos() {
-    return of(this.todos);
+  deleteTodo(todoId: string): Observable<void> {
+    const deletePromise = fetch(`/api/todos/${todoId}`, { method: "DELETE" });
+    return from(deletePromise).pipe(map(() => undefined));
+  }
+  addTodo(todo: Omit<Models.Todo, "id">): Observable<Models.Todo> {
+    const addPromise = fetch("/api/todos", {
+      method: "POST",
+      body: JSON.stringify(todo),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => res.json());
+    return from(addPromise);
   }
 }
 

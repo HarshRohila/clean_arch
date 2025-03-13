@@ -12,7 +12,7 @@ function makeServer({ environment = "test" } = {}) {
     factories,
 
     seeds(server) {
-      server.createList("todo", 2);
+      server.createList("todo", 3);
     },
 
     routes() {

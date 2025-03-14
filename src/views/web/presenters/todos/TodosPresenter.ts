@@ -14,8 +14,8 @@ class TodosPresenter implements ITodosPresenter {
     deletingTodoId: undefined,
     savingTodoId: undefined,
   });
-
   private _newTodoText = createState<{ text: string }>({ text: "" });
+  private _todoService = container.resolve("ITodoService");
 
   viewModel: TodosViewModel;
 
@@ -49,12 +49,12 @@ class TodosPresenter implements ITodosPresenter {
   handleAddTodo(): void {
     this._todosState.update({ addingTodo: true });
 
-    this.todoService
+    this._todoService
       .addTodo({
         text: this._newTodoText.get().text,
       })
       .pipe(
-        switchMap(() => this.todoService.getTodos()),
+        switchMap(() => this._todoService.getTodos()),
         take(1)
       )
       .subscribe((newTodos) => {
@@ -62,30 +62,25 @@ class TodosPresenter implements ITodosPresenter {
         this._todosState.update({ todos: newTodos, addingTodo: false });
       });
   }
-
-  private todoService = container.resolve("ITodoService");
-
   handleEdit(updatedTodo: Models.Todo) {
     this._todosState.update({
       currentEditTodoId: updatedTodo.id,
       currentEditingTodo: { ...updatedTodo },
     });
   }
-
   isTodoInEditMode(todoId: string) {
     return this._todosState.get().currentEditTodoId === todoId;
   }
-
   handleSubmit() {
     this._todosState.update({
       savingTodoId: this._todosState.get().currentEditTodoId,
     });
     const state = this._todosState.get();
 
-    this.todoService
+    this._todoService
       .updateTodo(state.currentEditTodoId!, state.currentEditingTodo!)
       .pipe(
-        switchMap(() => this.todoService.getTodos()),
+        switchMap(() => this._todoService.getTodos()),
         take(1)
       )
       .subscribe((newTodos) => {
@@ -110,10 +105,10 @@ class TodosPresenter implements ITodosPresenter {
   }
   handleDelete(todoId: string) {
     this._todosState.update({ deletingTodoId: todoId });
-    this.todoService
+    this._todoService
       .deleteTodo(todoId)
       .pipe(
-        switchMap(() => this.todoService.getTodos()),
+        switchMap(() => this._todoService.getTodos()),
         take(1)
       )
       .subscribe((newTodos) => {
@@ -122,8 +117,7 @@ class TodosPresenter implements ITodosPresenter {
   }
 
   loadTodos() {
-    container
-      .resolve("ITodoService")
+    this._todoService
       .getTodos()
       .pipe(take(1))
       .subscribe((todos) => {
